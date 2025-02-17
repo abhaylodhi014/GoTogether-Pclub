@@ -28,7 +28,7 @@ const Rating = ({showAlert}) => {
 
   return (
     <div className='flex items-center justify-center w-full h-screen'>
-     <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-lg w-72 text-center">
+     <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-lg  text-center">
       <h1 className="text-2xl font-bold text-gray-700 mb-6">Rate the user: {username}</h1>
       
       <div className="flex gap-2 mb-6">
