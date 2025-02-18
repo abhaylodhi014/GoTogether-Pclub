@@ -4,11 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../service/firebase.js"; // Make sure to configure your Firebase here
+import { auth, googleProvider } from "../service/firebase.js";
 import API from "../service/api.js";
 
-export default function Auth({showAlert}) {
-
+export default function Auth({ showAlert }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,72 +18,71 @@ export default function Auth({showAlert}) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate("/");
     }
   }, [isAuthenticated, navigate]);
 
-
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email.endsWith("@iiti.ac.in")) {
-      setError("Only IIT Indore email addresses are allowed.");
-      showAlert(error , "error");
-      return;
-    }
-    setError("Authentication not implemented. Use Google Login.");
-    showAlert(error , "error");
-  };
-
-  //  Login function for checking working of apis
-
-  //  const loginUser = async () => {
-  //   try {
-  //     const response = await API.userLogin({ email, password });
-      
-  //     // Store tokens in sessionStorage
-  //     sessionStorage.setItem('accessToken', `Bearer ${response.data.accessToken}`);
-  //     sessionStorage.setItem('refreshToken', `Bearer ${response.data.refreshToken}`);
-  //     sessionStorage.setItem('username', response.data.username);
-  //     sessionStorage.setItem('email', response.data.email);
-
-  //     setError("");
-  //     setIsAuthenticated(true);  // Trigger redirection
-  //     navigate('/')
-  //   } catch (error) {
-  //       setError(error.response?.data?.message || "Login failed !! try again.");
-  //       showAlert("Login failed !! try again." , 'error')
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!email.endsWith("@iiti.ac.in")) {
+  //     setError("Only IIT Indore email addresses are allowed.");
+  //     showAlert("Only IIT Indore email addresses are allowed.", "error");
+  //     return;
   //   }
+  //   setError("Authentication not implemented. Use Google Login.");
+  //   showAlert("Authentication not implemented. Use Google Login.", "error");
   // };
-    // // Signup function
-    // const signupUser = async () => {
-    //   try {
-    //     const response = await API.userSignup({ username, email, password });
+
+
+    //  I give this login and signup function because i google auth... is not working then you can access by email as well
+
+   const loginUser = async () => {
+    try {
+      const response = await API.userLogin({ email, password });
+      
+      // Store tokens in sessionStorage
+      sessionStorage.setItem('accessToken', `Bearer ${response.data.accessToken}`);
+      sessionStorage.setItem('refreshToken', `Bearer ${response.data.refreshToken}`);
+      sessionStorage.setItem('username', response.data.username);
+      sessionStorage.setItem('email', response.data.email);
+
+      setError("");
+      setIsAuthenticated(true);  // Trigger redirection
+      navigate('/')
+    } catch (error) {
+        setError(error.response?.data?.message || "Login failed !! try again.");
+        showAlert("Login failed !! try again." , 'error')
+    }
+  };
+    // Signup function
+    const signupUser = async () => {
+      try {
+        const response = await API.userSignup({ username, email, password });
         
   
-    //     // Store tokens in sessionStorage
-    //     sessionStorage.setItem('accessToken', `Bearer ${response.data.accessToken}`);
-    //     sessionStorage.setItem('refreshToken', `Bearer ${response.data.refreshToken}`);
-    //     sessionStorage.setItem('username', response.data.username);
-    //     sessionStorage.setItem('email', response.data.email);
+        // Store tokens in sessionStorage
+        sessionStorage.setItem('accessToken', `Bearer ${response.data.accessToken}`);
+        sessionStorage.setItem('refreshToken', `Bearer ${response.data.refreshToken}`);
+        sessionStorage.setItem('username', response.data.username);
+        sessionStorage.setItem('email', response.data.email);
   
-    //     setError("");
-    //     setIsAuthenticated(true);  // Trigger redirection
-    //     navigate('/')
-    //   } catch (error) {
-    //     showAlert("signup failed !! try again." , 'error')
-    //     setError(error.response?.data?.message || "signup failed !! try again.")
-    //   }
-    // };
-    // // Form submission handler
-    // const handleSubmit = async (e) => {
-    //   e.preventDefault();
-    //   if (isLogin) {
-    //     await loginUser();
-    //   } else {
-    //     await signupUser();
-    //   }
-    // };
+        setError("");
+        setIsAuthenticated(true);  // Trigger redirection
+        navigate('/')
+      } catch (error) {
+        showAlert("signup failed !! try again." , 'error')
+        setError(error.response?.data?.message || "signup failed !! try again.")
+      }
+    };
+    // Form submission handler
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (isLogin) {
+        await loginUser();
+      } else {
+        await signupUser();
+      }
+    };
 
   const handleGoogleAuth = async () => {
     try {
@@ -95,25 +93,26 @@ export default function Auth({showAlert}) {
         showAlert("Only IIT Indore email addresses are allowed.", "warning");
         return;
       }
-      sessionStorage.setItem("username", user.displayName);
-      sessionStorage.setItem("email", user.email);
-      sessionStorage.setItem("profilePhoto", user.photoURL);
-   
 
-      // Send user data to backend to store in MongoDB
       const response = await API.googleauth({
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
       });
-      
-      sessionStorage.setItem('accessToken', `Bearer ${response.data.accessToken}`);
-      sessionStorage.setItem('refreshToken', `Bearer ${response.data.refreshToken}`);
 
-      navigate('/')
+      
+      // Store session storage safely inside useEffect
+      useEffect(() => {
+        sessionStorage.setItem("username", user.displayName);
+        sessionStorage.setItem("email", user.email);
+        sessionStorage.setItem("profilePhoto", user.photoURL);
+        sessionStorage.setItem("accessToken", `Bearer ${response.data.accessToken}`);
+        sessionStorage.setItem("refreshToken", `Bearer ${response.data.refreshToken}`);
+        setIsAuthenticated(true);
+      }, [user, response]);
     } catch (error) {
       setError("Error with Google Authentication: " + error.message);
-      showAlert(error , "error");
+      showAlert("Error with Google Authentication: " + error.message, "error");
     }
   };
 

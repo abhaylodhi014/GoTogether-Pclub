@@ -10,6 +10,9 @@ const Profile = ({ showAlert }) => {
   const [userRides, setUserRides] = useState([]);
   const navigate = useNavigate();
   const [rating, setRating] = useState(null);
+
+
+  //formattime function that conver 24 hr system to am and pm system
   const formatTime = (time) => {
     if (!time) return 'Invalid Time';
     const [hour, minute] = time.split(':');
@@ -21,7 +24,7 @@ const Profile = ({ showAlert }) => {
 
   useEffect(() => {
     if (!username) return;
-
+//fetch all ride and select ride that are upload by currentuser by use of username
     const fetchRides = async () => {
       try {
         const response = await API.getAllRide();
@@ -33,7 +36,7 @@ const Profile = ({ showAlert }) => {
         console.error('Failed to fetch rides:', error);
       }
     };
-
+//fetch average rating from backend 
     const fetchRating = async () => {
       const response = await API.getRatings(username);
       if (response.isSuccess) {
@@ -42,13 +45,15 @@ const Profile = ({ showAlert }) => {
     };
 
     fetchRating();
-
     fetchRides();
   }, [username]);
 
+
+// generate start based on ratings 
   const renderStars = () => {
     const stars = [];
-    const filledStars = Math.round(rating); // Round the rating for full stars
+    const filledStars = Math.round(rating); 
+    // Round the rating for full stars
 
     // Create full stars
     for (let i = 0; i < filledStars; i++) {
@@ -70,7 +75,7 @@ const Profile = ({ showAlert }) => {
       );
     }
 
-    // Create empty stars for the rest
+  // Create empty stars for the rest
     for (let i = filledStars; i < 5; i++) {
       stars.push(
         <svg
@@ -93,13 +98,13 @@ const Profile = ({ showAlert }) => {
     return stars;
   };
 
+  //if user want to loguout then clear all detail store in sessionstorage like accesstoken and refreshtoken username , email and then new user login with new token
   const handleLogout = () => {
     sessionStorage.clear();
     navigate('/auth');
   };
 
   if (!username) {
-
     return (
       <div className="flex flex-col items-center justify-center w-full min-h-screen bg-gray-50 px-4">
         <h1 className="text-3xl font-semibold text-gray-800">You are not signed in!</h1>
@@ -114,9 +119,11 @@ const Profile = ({ showAlert }) => {
     );
   }
 
+  //acess today date and separate the ride based on today day as pending and completed ride 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  //if ride have arrivaldate > today then its pendign otherwise its previous
   const pendingRides = userRides.filter((ride) => new Date(ride.arrivalDate) >= today);
   const completedRides = userRides.filter((ride) => new Date(ride.arrivalDate) < today);
 
@@ -133,9 +140,7 @@ const Profile = ({ showAlert }) => {
           <p className="text-gray-700">{email}</p>
           <div className="flex space-x-1"><p className="text-gray-700">{rating ||  "N/A"}</p>
           {renderStars()}
-            
           </div>
-          
           <button
             onClick={handleLogout}
             className=" text-blue-500 px-4 hover:text-blue-700 font-bold text-lg"

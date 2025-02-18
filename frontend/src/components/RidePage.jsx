@@ -9,11 +9,11 @@ const RidePage = ({ showAlert }) => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
-
+const [loggedInUsername, setLoggedInUsername] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const loggedInUsername = sessionStorage.getItem('username');
+  
 
   const formatTime = (time) => {
     if (!time) return 'Invalid Time'; // or some fallback text
@@ -27,6 +27,11 @@ const RidePage = ({ showAlert }) => {
   };
 
   useEffect(() => {
+ // Access sessionStorage and set the logged-in username
+ const username = sessionStorage.getItem('username');
+ setLoggedInUsername(username);
+//fetch ridedetails of paticular ride
+
     const fetchRideDetails = async () => {
       if (!id) return;
       try {
