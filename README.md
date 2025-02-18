@@ -12,9 +12,9 @@ The GoTogether platform is live and fully operational.
 - **Frontend (Vercel):** [GoTogether Frontend](https://go-together-zeta.vercel.app)
 - **Backend (Render):** [GoTogether API](https://gotogether-64ny.onrender.com)
 
-### 🔸 **Using the App:**
-Simply visit the [GoTogether App](https://go-together-zeta.vercel.app) to start your ride-sharing experience. You can search for available rides, offer your own, and track your ride status easily. Sign in using **Google** or **email** to get started.
 
+### 🔸 **Using the App:**
+Simply visit the [GoTogether App](https://go-together-zeta.vercel.app) to start your ride-sharing experience. You can search for available rides, offer your own, and track your ride status easily. Sign in using **Google** or **email and password** to get started. If **Google Firebase authentication** doesn't work, you can still **log in or sign up using your email and password**.
 ---
 
 ## 📄 **Features**
